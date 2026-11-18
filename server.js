@@ -177,10 +177,10 @@ const server = http.createServer(async (req, res) => {
   });
 });
 
-server.listen(PORT, () => {
+server.listen(PORT, '0.0.0.0', () => {
   console.log(`\n========================================`);
   console.log(`🖤 Evolution API QR Portal (Minimalist)`);
-  console.log(`🌐 Servidor corriendo en: http://localhost:${PORT}`);
+  console.log(`🌐 Servidor corriendo en: http://0.0.0.0:${PORT}`);
   console.log(`📱 Instancia conectada: ${INSTANCE}`);
   console.log(`========================================\n`);
 });
