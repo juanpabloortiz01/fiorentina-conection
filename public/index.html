@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Conexión WhatsApp | Evolution API</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="noise-overlay"></div>
+
+  <main class="page-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="brand">
+        <span class="brand-badge">EVOLUTION</span>
+        <span class="brand-title">WhatsApp Gateway</span>
+      </div>
+      <div class="connection-pill" id="statusPill">
+        <span class="status-dot" id="statusDot"></span>
+        <span class="status-label" id="statusLabel">Comprobando...</span>
+      </div>
+    </header>
+
+    <!-- Main Card -->
+    <section class="card">
+      <!-- State: Loading / QR View -->
+      <div id="qrSection" class="section-view active">
+        <div class="card-header">
+          <h1 class="card-title">Vincular Dispositivo</h1>
+          <p class="card-subtitle">Escanea el código QR desde WhatsApp para conectar la instancia.</p>
+        </div>
+
+        <!-- QR Display Wrapper -->
+        <div class="qr-wrapper">
+          <div class="qr-box" id="qrBox">
+            <div class="qr-loader" id="qrLoader">
+              <div class="spinner"></div>
+              <span>Generando código QR...</span>
+            </div>
+            <img id="qrImage" class="qr-img hidden" alt="Código QR de WhatsApp">
+            <div id="qrExpired" class="qr-overlay hidden">
+              <span class="overlay-text">El código ha expirado</span>
+              <button class="btn btn-primary" id="btnRefreshExpired">Generar nuevo QR</button>
+            </div>
+          </div>
+
+          <!-- Countdown / Refresh Progress -->
+          <div class="countdown-bar-container" id="progressContainer">
+            <div class="countdown-bar" id="progressBar"></div>
+          </div>
+        </div>
+
+        <!-- Pairing Code Option (if available) -->
+        <div id="pairingCodeWrapper" class="pairing-box hidden">
+          <span class="pairing-label">Código de vinculación:</span>
+          <span class="pairing-code" id="pairingCodeValue">---- ----</span>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="actions-row">
+          <button class="btn btn-secondary" id="btnRefresh">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path>
+              <path d="M21 3v5h-5"></path>
+              <path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path>
+              <path d="M3 21v-5h5"></path>
+            </svg>
+            <span>Actualizar QR</span>
+          </button>
+        </div>
+
+        <!-- Instructions -->
+        <div class="instructions">
+          <div class="step-item">
+            <span class="step-num">01</span>
+            <span class="step-text">Abre <strong>WhatsApp</strong> en tu teléfono</span>
+          </div>
+          <div class="step-item">
+            <span class="step-num">02</span>
+            <span class="step-text">Toca <strong>Dispositivos vinculados</strong></span>
+          </div>
+          <div class="step-item">
+            <span class="step-num">03</span>
+            <span class="step-text">Selecciona <strong>Vincular un dispositivo</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- State: Connected View -->
+      <div id="connectedSection" class="section-view">
+        <div class="connected-icon-wrapper">
+          <svg class="check-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="m9 12 2 2 4-4"></path>
+          </svg>
+        </div>
+        <h2 class="card-title">Instancia Conectada</h2>
+        <p class="card-subtitle">Tu número de WhatsApp se encuentra vinculado y listo para procesar mensajes.</p>
+
+        <div class="connected-details">
+          <div class="detail-row">
+            <span class="detail-label">Estado</span>
+            <span class="detail-value status-online">En línea (Open)</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Instancia</span>
+            <span class="detail-value" id="connectedInstanceName">...</span>
+          </div>
+        </div>
+
+        <div class="actions-row">
+          <button class="btn btn-outline-danger" id="btnLogout">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+            <span>Desvincular Instancia</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-meta">
+        <span class="meta-label">ID de Instancia:</span>
+        <code class="instance-id" id="footerInstanceId">cargando...</code>
+        <button class="copy-btn" id="btnCopyInstance" title="Copiar ID">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect>
+            <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>
+          </svg>
+        </button>
+      </div>
+    </footer>
+  </main>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

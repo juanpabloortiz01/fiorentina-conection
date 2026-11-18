@@ -1,0 +1,14 @@
+{
+  "name": "fiorentina-evo-qr",
+  "version": "1.0.0",
+  "description": "Minimalist Black & White Evolution API QR Connection Portal",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "keywords": ["evolution-api", "whatsapp", "qr"],
+  "author": "",
+  "license": "ISC"
+}
